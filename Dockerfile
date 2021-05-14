@@ -1,6 +1,5 @@
 FROM ubuntu:20.04
 
-
 # Install some tools and compilers + clean up
 ARG DEBIAN_FRONTEND=noninteractive
 ENV TZ=Europe/Amsterdam
