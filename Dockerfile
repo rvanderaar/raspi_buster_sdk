@@ -4,7 +4,7 @@ FROM ubuntu:20.04
 ARG DEBIAN_FRONTEND=noninteractive
 ENV TZ=Europe/Amsterdam
 RUN apt-get update && \
-    apt-get install -y rsync git wget cmake bzip2 sudo && \
+    apt-get install -y rsync git wget cmake bzip2 sudo gdb-multiarch && \
     apt-get clean autoclean && \
     apt-get autoremove -y && \
     rm -rf /var/lib/apt/lists/*
