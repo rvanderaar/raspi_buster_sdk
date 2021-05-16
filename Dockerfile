@@ -4,13 +4,14 @@ FROM ubuntu:20.04
 ARG DEBIAN_FRONTEND=noninteractive
 ENV TZ=Europe/Amsterdam
 RUN apt-get update && \
-    apt-get install -y rsync git wget cmake bzip2 && \
+    apt-get install -y rsync git wget cmake bzip2 sudo && \
     apt-get clean autoclean && \
     apt-get autoremove -y && \
     rm -rf /var/lib/apt/lists/*
 
 # Add a user called `develop`
 RUN useradd -ms /bin/bash develop
+RUN echo 'develop:develop' | chpasswd
 RUN echo "develop   ALL=(ALL:ALL) ALL" >> /etc/sudoers
 
 WORKDIR /home/develop
@@ -20,4 +21,14 @@ RUN cd /tmp && \
     tar xzf raspi-toolchain.tar.gz --strip-components=1 -C /opt && \
     rm raspi-toolchain.tar.gz
 
+# The ADD docker command wil automatically extract the tarbal
+WORKDIR /home/develop
+ADD rootfs.tgz raspi/
+
+RUN cd /home/develop/raspi/rootfs && \
+    ln -s usr/lib lib
+
+RUN chown -R develop.develop raspi
+
 USER develop
+    
