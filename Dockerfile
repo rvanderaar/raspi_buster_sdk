@@ -4,7 +4,7 @@ FROM ubuntu:20.04
 ARG DEBIAN_FRONTEND=noninteractive
 ENV TZ=Europe/Amsterdam
 RUN apt-get update && \
-    apt-get install -y rsync git wget cmake bzip2 sudo gdb-multiarch && \
+    apt-get install -y rsync git wget cmake bzip2 sudo gdb-multiarch debootstrap && \
     apt-get clean autoclean && \
     apt-get autoremove -y && \
     rm -rf /var/lib/apt/lists/*
@@ -21,14 +21,14 @@ RUN cd /tmp && \
     tar xzf raspi-toolchain.tar.gz --strip-components=1 -C /opt && \
     rm raspi-toolchain.tar.gz
 
-# The ADD docker command wil automatically extract the tarbal
-WORKDIR /home/develop
-ADD rootfs.tgz raspi/
+RUN mkdir -p /home/develop/rootfs/buster-armhf && \
+    debootstrap --arch=armhf --variant=minbase --foreign --no-check-gpg buster /home/develop/rootfs/buster-armhf http://raspbian.raspberrypi.org/raspbian && \
+    chroot /home/develop/rootfs/buster-armhf /debootstrap/debootstrap --second-stage
 
-RUN cd /home/develop/raspi/rootfs && \
-    ln -s usr/lib lib
+RUN chroot /home/develop/rootfs/buster-armhf apt-get update && \
+    chroot /home/develop/rootfs/buster-armhf apt-get install -y  apt-utils libpigpio-dev libpigpiod-if-dev
 
-RUN chown -R develop.develop raspi
+COPY gdbinit /home/develop/.gdbinit
 
 USER develop
     
