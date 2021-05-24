@@ -31,6 +31,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Installing qemu on build host
+        run: apt install -y binfmt-support qemu-system-common qemu-user-static
+        
       - name: Build image
         run: docker build . --file Dockerfile --tag $IMAGE_NAME
 
